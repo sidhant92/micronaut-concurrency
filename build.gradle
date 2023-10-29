@@ -1,0 +1,64 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.1.2"
+    id("io.micronaut.aot") version "4.1.2"
+    id("java")
+}
+
+version = "0.1"
+group = "com.github.sidhant92"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("org.yaml:snakeyaml:2.1")
+    implementation("io.micronaut:micronaut-http-server-netty:4.1.9")
+    implementation("ch.qos.logback:logback-classic:1.4.7")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    compileOnly("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-http-client")
+}
+
+
+application {
+    mainClass.set("com.github.sidhant92.Application")
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("build/generated/source/proto/main/java")
+        }
+    }
+}
+
+micronaut {
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.github.sidhant92.*")
+    }
+    aot {
+        // optimizations configuration
+        optimizeServiceLoading = true
+        convertYamlToJava = true
+        precomputeOperations = true
+        cacheEnvironment = true
+        netty {
+            enabled = true
+        }
+    }
+}
